@@ -32,8 +32,14 @@ def get_model(benchmark, radius=None):
         return LDSwithCTRNN(radius)  # Benchmark to run
     elif benchmark == "pendulumCTRNN":
         return PendulumwithCTRNN(radius)  # Benchmark to run
+    elif benchmark == "dfpCTRNN":
+        return CTRNN_DampedForcedPendulum(radius)
     elif benchmark == "CTRNNosc":
         return CTRNNosc(radius)  # Benchmark to run
+    elif benchmark == "spiralL":
+        return spiralL(radius)  # Benchmark to run
+    elif benchmark == "spiralNL":
+        return spiralNL(radius)  # Benchmark to run
     else:
         raise ValueError("Unknown benchmark " + benchmark)
 
@@ -390,7 +396,7 @@ class CTRNN_DampedForcedPendulum:
         if radius is not None:
             self.rad = radius
         else:
-            self.rad = 1e-08  # initial radius
+            self.rad = 0.01  # initial radius
         # ===================================================
 
         self.cx = np.array(self.cx, dtype=float)
@@ -1510,4 +1516,71 @@ class CTRNNosc:
 
         hidden = np.tanh(np.dot(x, self.params["w1"]) + self.params["b1"])
         dhdt = np.dot(hidden, self.params["w2"]) + self.params["b2"]
+        return dhdt
+
+class spiralL:
+    def __init__(self,radius):
+        self.cx = (2.0, 0.0)
+        if radius is not None:
+            self.rad = radius
+        else:
+            self.rad = 0.01
+        self.cx = np.array(self.cx, dtype=float)
+        self.dim = self.cx.size
+
+    def fdyn(self, t=0, x=None):
+        if x is None:
+            x = np.zeros(self.dim, dtype=object)
+
+        w1 = np.array([[-0.32294768,0.59955627],
+        [0.47014388,-0.39748120],
+        [-0.56326932,0.33752987],
+        [0.45147443,0.31528524],
+        [0.41403031,-0.47271276],
+        [-0.12952870,-0.62095606],
+        [-0.41343114,-0.45678866],
+        [-0.33266136,0.29245856],
+        [0.50114638,0.39612201],
+        [0.47665390,0.55137879]])
+        b1 = np.array([0.0038923009,0.0037905588,0.0017197595,-0.0033185149,0.0024190384,-0.0013056855,0.0011365928,-0.00042518601,-0.0025141449,0.0010660964])
+        w2 = np.array([[-0.50525320,0.34800902,-0.34015974,-0.40054744,0.39193857,0.59363592,0.56743664,-0.33811751,-0.36945280,-0.46805024],
+        [-0.41715327,0.56257814,-0.56921810,0.60423535,0.53992182,-0.14412111,-0.45906776,-0.35295558,0.49238238,0.43526673]])
+        b2 = np.array([-0.0013696412,0.00060380378]);
+
+        hidden = np.dot(x,np.transpose(w1)) + b1
+        dhdt = np.dot(hidden, np.transpose(w2)) + b2
+        return dhdt
+
+
+
+class spiralNL:
+    def __init__(self,radius):
+        self.cx = (2.0, 0.0)
+        if radius is not None:
+            self.rad = radius
+        else:
+            self.rad = 0.01
+        self.cx = np.array(self.cx, dtype=float)
+        self.dim = self.cx.size
+
+    def fdyn(self, t=0, x=None):
+        if x is None:
+            x = np.zeros(self.dim,dtype=object)
+        w1 = np.array([[0.2911133 ,  0.12008807],
+        [-0.24582624,  0.23181419],
+        [-0.25797904,  0.21687193],
+        [-0.19282854, -0.2602416],
+        [0.26780415, -0.20697702],
+        [0.23462369,  0.2294843],
+        [-0.2583547 ,  0.21444395],
+        [-0.04514714,  0.29514763],
+        [-0.15318371, -0.275755],
+        [0.24873598,  0.21018365]])
+        b1 = np.array([0.0038677 , -0.00026365, -0.007168970,  0.02469357,  0.01338706,0.00856025, -0.00888401,  0.00516089, -0.00634514, -0.01914518])
+        w2 = np.array([[-0.58693904, -0.814841  , -0.8175157 ,  0.97060364,  0.6908913 ,-0.92446184, -0.79249185, -1.1507587 ,  1.2072723 , -0.7983982],
+        [1.1564877 , -0.8991244 , -1.0774536 , -0.6731967 ,  1.0154784 , 0.8984464 , -1.0766245 , -0.238209  , -0.5233613 ,  0.8886671]])
+        b2 = np.array([-0.04129209, -0.01508532])
+
+        hidden = np.tanh(np.dot(x,w1.T) + b1)
+        dhdt = np.dot(hidden, w2.T) + b2
         return dhdt

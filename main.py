@@ -16,6 +16,10 @@ from scipy.special import gamma
 
 import argparse
 
+# again, this only works on startup!
+from jax.config import config
+config.update("jax_enable_x64", True) # JAX enforces single precision, need to assign a new configuration for double precision
+
 
 if __name__ == "__main__":
 
@@ -24,7 +28,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="")
     parser.add_argument("--profile", action="store_true")
     parser.add_argument("--score", action="store_true")
-    parser.add_argument("--benchmark", default="vdp")
+    parser.add_argument("--benchmark", default="spiralNL")
     # starting_time, time_step and time_horizon for creating reachtubes
     parser.add_argument("--starting_time", default=0.01, type=float)
     parser.add_argument("--time_step", default=0.01, type=float)
@@ -32,7 +36,7 @@ if __name__ == "__main__":
     # batch-size for tensorization
     parser.add_argument("--batch_size", default=10000, type=int)
     # error-probability
-    parser.add_argument("--gamma", default=0.2, type=float)
+    parser.add_argument("--gamma", default=0.01, type=float)
     # mu as maximum over-approximation
     parser.add_argument("--mu", default=1.5, type=float)
     # choose between hyperspheres and ellipsoids to describe the Reachsets
@@ -73,7 +77,7 @@ if __name__ == "__main__":
         args.ellipsoids,
     )
 
-    fname = create_plot_file(files)
+    fname = create_plot_file(files,args)
 
     write_plot_file(fname, "w", 0, rt.model.cx, rt.model.rad, M1_timeRange[0, :, :])
 
