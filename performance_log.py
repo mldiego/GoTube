@@ -32,11 +32,8 @@ def close_log(notes):
         json.dump(final_dict, f)
 
 
-def create_plot_file(files):
-    for i in range(100000):
-        fname = files['output_directory']+f"{i:04d}"+files['output_file']
-        if not os.path.isfile(fname):
-            break
+def create_plot_file(files,argsmain):
+    fname = files['output_directory']+str(argsmain.benchmark) + "_" + str(argsmain.time_horizon) + "_" + str(argsmain.time_step) + "_" + str(argsmain.batch_size) + "_" + str(argsmain.radius) + "_" + str(argsmain.gamma) + "_" + str(argsmain.mu) +files['output_file']
     return fname
 
 

@@ -14,7 +14,7 @@ class FunctionDynamics:
     def __init__(self, model):
         self.model = model
 
-        x = jnp.ones(self.model.dim)
+        x = jnp.ones(self.model.dim, dtype='float64')
         if jnp.sum(jnp.abs(self.model.fdyn(0.0, x) - self.model.fdyn(1.0, x))) > 1e-8:
             # https://github.com/google/jax/issues/47
             raise ValueError("Only time-invariant systems supported currently")
