@@ -32,8 +32,8 @@ def get_model(benchmark, radius=None):
         return LDSwithCTRNN(radius)  # Benchmark to run
     elif benchmark == "pendulumCTRNN":
         return PendulumwithCTRNN(radius)  # Benchmark to run
-    elif benchmark == "dfpCTRNN":
-        return CTRNN_DampedForcedPendulum(radius)
+    elif benchmark == "fpaCTRNN":  # 
+        return CTRNN_fpa(radius)
     elif benchmark == "CTRNNosc":
         return CTRNNosc(radius)  # Benchmark to run
     elif benchmark == "spiralL":
@@ -387,9 +387,9 @@ class Quadcopter:
         return np.array(system_dynamics)  # return as numpy array
 
 
-# CTRNN DampedForced Pendulum example
+# CTRNN Fixed-Point Attractor example
 # from https://easychair.org/publications/open/K6SZ
-class CTRNN_DampedForcedPendulum:
+class CTRNN_fpa:
     def __init__(self, radius):
         # ============ adapt initial values ===========
         self.cx = (0.21535, -0.58587, 0.8, 0.52323, 0.5)  # initial values
